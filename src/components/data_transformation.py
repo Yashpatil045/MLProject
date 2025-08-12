@@ -47,3 +47,35 @@ class DataTransformation:
         except Exception as e:
             logging.error("Error occurred while creating data transformer object")
             raise CustomException("Error occurred while creating data transformer object", sys) from e
+        
+    def initiate_data_transformation(self, train_path, test_path):
+        try:
+            train_data = pd.read_csv(train_path)
+            test_data = pd.read_csv(test_path)
+
+            logging.info("Data loaded successfully")
+
+            preprocessor = self.get_data_transformer_object()
+
+            X_train = train_data.drop("target", axis=1)
+            y_train = train_data["target"]
+
+            X_test = test_data.drop("target", axis=1)
+            y_test = test_data["target"]
+
+            logging.info("Data split into train and test sets")
+
+            # Fit the preprocessor on the training data
+            preprocessor.fit(X_train)
+
+            # Transform the data
+            X_train_transformed = preprocessor.transform(X_train)
+            X_test_transformed = preprocessor.transform(X_test)
+
+            logging.info("Data transformation complete")
+
+            return X_train_transformed, y_train, X_test_transformed, y_test
+
+        except Exception as e:
+            logging.error("Error occurred during data transformation")
+            raise CustomException("Error occurred during data transformation", sys) from e  
